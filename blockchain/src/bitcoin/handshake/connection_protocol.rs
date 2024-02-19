@@ -9,6 +9,7 @@ use super::{
     send_version_ack::SendVerAck,
 };
 
+#[allow(private_interfaces)]
 #[derive(Debug)]
 pub enum BitcoinConnectionStates {
     Disconnected(Disconnected),
