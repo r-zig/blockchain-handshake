@@ -3,6 +3,7 @@ use super::peer_discovery::PeerDiscovery;
 // abstract trait for all peer types, regardless if they represent the local peer , or remote connected to - peer
 pub trait Peer {
     fn get_state(&self) -> Option<&PeerState>;
+    #[allow(async_fn_in_trait)]
     async fn connect(&mut self) -> Result<(), Box<dyn std::error::Error>>;
 }
 
