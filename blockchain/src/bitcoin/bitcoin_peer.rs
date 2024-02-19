@@ -99,7 +99,10 @@ impl Peer for RemotePeer {
                 self.peer_state = Some(PeerState::Authenticated);
                 Ok(())
             }
-            Err(e) => Err(Box::new(e)),
+            Err(e) => {
+                tracing::error! {%e};
+                Err(Box::new(e))
+            }
         }
     }
 }
