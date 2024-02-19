@@ -188,26 +188,3 @@ impl BitcoinConnectionProtocol {
         }
     }
 }
-
-// impl Stream for BitcoinConnectionProtocol {
-//     type Item = InnerFutureResult;
-
-//     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> PollResult {
-//         match self.state {
-//             BitcoinConnectionStates::Disconnected(d) => self.handle_disconnect_state(cx, d),
-//             BitcoinConnectionStates::Connecting(c) => self.handle_connecting_state(cx, c),
-//             BitcoinConnectionStates::SendVersion(s) => self.handle_send_version(cx, s),
-//             BitcoinConnectionStates::AwaitVersion(a) => self.handle_await_version(cx, a),
-//             BitcoinConnectionStates::SendVerAck(s) => self.handle_send_version_ack(cx, s),
-//             BitcoinConnectionStates::AwaitVerAck(a) => self.handle_await_version_ack(cx, a),
-//             // Connection is established, nothing more to do
-//             BitcoinConnectionStates::Established(_) => Poll::Ready(Some(Ok(()))),
-//             BitcoinConnectionStates::Failed(e) => {
-//                 Poll::Ready(Some(Err(BitcoinHandshakeError::ProtocolError(format!(
-//                     "Connection is in a failed state due to error: {}",
-//                     e
-//                 )))))
-//             }
-//         }
-//     }
-// }
