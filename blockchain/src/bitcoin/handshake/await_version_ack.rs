@@ -3,6 +3,7 @@ use tokio::{io::AsyncReadExt, net::TcpStream};
 use super::{connection_protocol::AdvanceStateResult, send_version_ack::SendVerAck};
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
+#[derive(Debug)]
 pub(super) struct AwaitVerAck {
     pub(super) channel: TcpStream,
     pub(super) connection_info: BitcoinConnectionInfo,

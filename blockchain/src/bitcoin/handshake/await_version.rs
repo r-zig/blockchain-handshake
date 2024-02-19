@@ -4,6 +4,7 @@ use super::{connection_protocol::AdvanceStateResult, send_version::SendVersion};
 
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
+#[derive(Debug)]
 pub(super) struct AwaitVersion {
     pub(super) channel: TcpStream,
     pub(super) connection_info: BitcoinConnectionInfo,

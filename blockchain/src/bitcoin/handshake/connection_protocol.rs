@@ -9,6 +9,7 @@ use super::{
     send_version_ack::SendVerAck,
 };
 
+#[derive(Debug)]
 pub enum BitcoinConnectionStates {
     Disconnected(Disconnected),
     Connecting(Connecting),
@@ -51,6 +52,7 @@ impl From<std::io::Error> for BitcoinHandshakeError {
 pub(super) type AdvanceStateResult = Result<(), BitcoinHandshakeError>;
 
 // implement the connection protocol of bitcoin client (the handshake)
+#[derive(Debug)]
 pub struct BitcoinConnectionProtocol {
     state: BitcoinConnectionStates,
     connection_info: BitcoinConnectionInfo,
@@ -64,6 +66,7 @@ impl BitcoinConnectionProtocol {
         }
     }
 
+    #[tracing::instrument]
     pub(crate) async fn advance(&mut self) -> Result<Option<TcpStream>, BitcoinHandshakeError> {
         let state = std::mem::replace(
             &mut self.state,

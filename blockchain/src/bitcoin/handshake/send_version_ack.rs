@@ -4,6 +4,7 @@ use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
 use super::{await_version::AwaitVersion, connection_protocol::AdvanceStateResult};
 
+#[derive(Debug)]
 pub(super) struct SendVerAck {
     pub(super) channel: TcpStream,
     pub(super) connection_info: BitcoinConnectionInfo,

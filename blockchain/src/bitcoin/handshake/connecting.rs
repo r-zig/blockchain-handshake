@@ -6,6 +6,7 @@ use super::{
 };
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
+#[derive(Debug)]
 pub(super) struct Connecting {
     pub(super) channel: Option<TcpStream>,
     pub(super) connection_info: BitcoinConnectionInfo,

@@ -4,6 +4,7 @@ use super::connecting::Connecting;
 
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
+#[derive(Debug)]
 pub(super) struct SendVersion {
     pub(super) channel: TcpStream,
     pub(super) connection_info: BitcoinConnectionInfo,

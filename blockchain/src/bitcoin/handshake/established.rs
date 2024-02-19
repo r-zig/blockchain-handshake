@@ -3,6 +3,7 @@ use tokio::net::TcpStream;
 use super::await_version_ack::AwaitVerAck;
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
+#[derive(Debug)]
 pub(super) struct Established {
     pub(super) channel: TcpStream,
     pub(super) connection_info: BitcoinConnectionInfo,
