@@ -20,30 +20,35 @@ pub mod commands {
     }
 
     impl Command {
-        pub fn encode(&self) -> [u8; 12] {
-            let mut array = [0u8; 12];
-            let binding = self.to_string();
-            let bytes = binding.as_bytes();
-            for (i, &byte) in bytes.iter().enumerate().take(12) {
-                array[i] = byte;
+        pub fn encode(&self) -> Result<[u8; 12], String> {
+            let command = self.to_string();
+            // Ensure the command is not longer than the fixed length.
+            if command.len() > 12 {
+                return Err("Command too long".to_owned());
+            }
+            let mut buf = [0u8; 12]; // Initialize a buffer with null bytes.
+            for (i, &byte) in command.as_bytes().iter().enumerate() {
+                if !byte.is_ascii() {
+                    return Err("Command contains non-ASCII characters".to_owned());
+                }
+                buf[i] = byte; // Copy the command bytes into the buffer.
             }
 
-            array
+            // The rest of the buffer is already filled with null bytes.
+            Ok(buf)
         }
 
         /// Decodes a lowercase string into an enum variant, if valid.
-        pub fn decode(buf: [u8; 12]) -> Result<Self, &'static str> {
-            let trimmed_slice = buf.iter().take(12).cloned().collect::<Vec<u8>>();
-            // Convert the byte slice into a string.
-            let command_str = match String::from_utf8(trimmed_slice) {
-                Ok(s) => s,
-                Err(_) => return Err("Failed to convert array to string"),
+        pub fn decode(buf: [u8; 12]) -> Result<Self, String> {
+            // Convert the byte array into a UTF-8 string slice, stopping at the first null byte.
+            // This effectively trims the null padding added during encoding.
+            let command_str = match std::str::from_utf8(&buf) {
+                Ok(s) => s.split('\0').next().unwrap_or(""),
+                Err(_) => return Err("Failed to convert array to string".to_owned()),
             };
 
-            // Parse the string back into a Commands enum variant.
-            command_str
-                .parse::<Command>()
-                .map_err(|_| "Invalid command")
+            // Parse the trimmed string into a Command enum variant.
+            command_str.parse::<Command>().map_err(|e| e.to_string())
         }
     }
     #[cfg(test)]
@@ -69,7 +74,7 @@ pub mod commands {
         #[test]
         fn test_encode_decode_all_commands() {
             for command in Command::iter() {
-                let encoded = command.encode();
+                let encoded = command.encode().unwrap();
                 let decoded = Command::decode(encoded)
                     .expect(&format!("Decoding failed for command: {}", command));
                 assert_eq!(command, decoded, "Failed on command: {:?}", command);
