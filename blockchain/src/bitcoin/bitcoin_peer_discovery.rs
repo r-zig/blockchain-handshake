@@ -1,6 +1,6 @@
+use clap::Parser;
 use futures::{stream, Stream};
 use std::{net::SocketAddr, pin::Pin};
-use structopt::StructOpt;
 
 use crate::protocols::peer_discovery::PeerDiscovery;
 
@@ -13,7 +13,7 @@ pub struct BitcoinPeerDiscovery {
 impl BitcoinPeerDiscovery {
     pub fn new() -> Self {
         BitcoinPeerDiscovery {
-            bitcoin_peer_configuration: BitcoinPeerConfiguration::from_args(),
+            bitcoin_peer_configuration: BitcoinPeerConfiguration::parse(),
         }
     }
 }
@@ -32,10 +32,10 @@ impl PeerDiscovery for BitcoinPeerDiscovery {
     }
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(name = "Bitcoin connection configuration")]
+#[derive(Debug, Parser)]
+#[clap(long_about = "Bitcoin connection configuration")]
 pub struct BitcoinPeerConfiguration {
-    #[structopt(long, env = "REMOTE_PEER_ADDRESS")]
+    #[clap(long, env = "REMOTE_PEER_ADDRESS")]
     pub remote_peer_address: SocketAddr,
 }
 
