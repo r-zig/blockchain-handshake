@@ -74,7 +74,7 @@ impl Decoder for HeaderCodec {
     type Error = io::Error;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-        if src.len() < 24 {
+        if src.len() < HEADER_LENGTH {
             // Size of the header
             return Ok(None);
         }
@@ -110,7 +110,11 @@ impl Encoder<HeaderMessage> for HeaderCodec {
             ));
         }
         dst.put_u32_le(item.magic);
-        dst.extend_from_slice(&item.command.encode());
+        let command_buf = &item
+            .command
+            .encode()
+            .map_err(|e| Error::new(ErrorKind::InvalidData, e))?;
+        dst.extend_from_slice(command_buf);
         dst.put_u32_le(item.payload_length);
         dst.extend_from_slice(&item.checksum);
         Ok(())
@@ -126,7 +130,7 @@ mod tests {
         let mut codec = HeaderCodec;
         let mut buf = BytesMut::new();
         buf.extend_from_slice(&MAINNET_MAGIC.to_le_bytes());
-        buf.extend_from_slice(b"commandname\x00\x00\x00");
+        buf.extend_from_slice(b"version\x00\x00\x00\x00\x00");
         buf.extend_from_slice(&100u32.to_le_bytes());
         buf.extend_from_slice(&[0xAB; 4]);
 
@@ -134,7 +138,8 @@ mod tests {
             Ok(Some(header)) => {
                 assert_eq!(header.magic, MAINNET_MAGIC);
             }
-            _ => panic!("Failed to decode a valid header"),
+            Ok(None) => panic!("Failed to decode a valid header, buffer to short"),
+            Err(e) => panic!("Failed to decode a valid header {:?}", e),
         }
     }
 
@@ -143,7 +148,7 @@ mod tests {
         let mut codec = HeaderCodec;
         let mut buf = BytesMut::new();
         buf.extend_from_slice(&0x12345678u32.to_le_bytes());
-        buf.extend_from_slice(b"commandname\x00\x00\x00");
+        buf.extend_from_slice(b"version\x00\x00\x00\x00\x00");
         buf.extend_from_slice(&100u32.to_le_bytes());
         buf.extend_from_slice(&[0xAB; 4]);
 
