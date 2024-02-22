@@ -94,9 +94,10 @@ impl Peer for RemotePeer {
     async fn connect(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let mut connection_protocol = BitcoinConnectionProtocol::new(self.connection_info.clone());
         match connection_protocol.connect().await {
-            Ok(channel) => {
-                self.channel = Some(channel);
+            Ok(value) => {
+                self.channel = Some(value.0);
                 self.peer_state = Some(PeerState::Authenticated);
+                self.connection_info = value.1;
                 Ok(())
             }
             Err(e) => {

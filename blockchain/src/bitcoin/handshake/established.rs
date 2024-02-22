@@ -1,6 +1,6 @@
 use tokio::net::TcpStream;
 
-use super::await_version_ack::AwaitVerAck;
+use super::{await_version_ack::AwaitVerAck, CHANNEL_NOT_INITIALIZED_ERROR};
 use crate::bitcoin::bitcoin_connection_info::BitcoinConnectionInfo;
 
 #[derive(Debug)]
@@ -20,6 +20,9 @@ impl Established {
 
 impl From<AwaitVerAck> for Established {
     fn from(value: AwaitVerAck) -> Self {
-        Established::new(value.channel, value.connection_info)
+        Established::new(
+            value.channel.expect(CHANNEL_NOT_INITIALIZED_ERROR),
+            value.connection_info,
+        )
     }
 }

@@ -17,7 +17,7 @@ mod tests {
         // set environment variables to point to the well known peer address
         let remote_peer_address = "127.0.0.1:8333";
         // Set up the environment variable
-        std::env::set_var("SINGLE_PEER_ADDRESS", remote_peer_address);
+        std::env::set_var("REMOTE_PEER_ADDRESS", remote_peer_address);
 
         // create bitcoin peer using the factory
         let mut local_peer = BitcoinPeerFactory::new_peer();

@@ -179,12 +179,14 @@ impl BitcoinConnectionProtocol {
         }
     }
 
-    pub async fn connect(&mut self) -> Result<TcpStream, BitcoinHandshakeError> {
+    pub async fn connect(
+        &mut self,
+    ) -> Result<(TcpStream, BitcoinConnectionInfo), BitcoinHandshakeError> {
         let mut connection_protocol = BitcoinConnectionProtocol::new(self.connection_info.clone());
         loop {
             _ = match connection_protocol.state {
                 BitcoinConnectionStates::Established(established) => {
-                    return Ok(established.channel);
+                    return Ok((established.channel, established.connection_info));
                 }
                 BitcoinConnectionStates::Failed(e) => return Err(e),
                 _ => connection_protocol.advance().await,
