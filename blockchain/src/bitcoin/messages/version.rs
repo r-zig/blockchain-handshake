@@ -1,6 +1,8 @@
 use bytes::{Buf, BufMut, BytesMut};
+use tracing::info;
 
 use std::{
+    fmt::format,
     io::{self, ErrorKind},
     net::Ipv6Addr,
 };
@@ -9,7 +11,7 @@ use tokio_util::codec::{Decoder, Encoder};
 use super::types::{BitcoinIpAddr, CompactSize};
 
 /// Represents a Bitcoin version message.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct VersionMessage {
     version: i32,
     services: u64,
@@ -50,20 +52,30 @@ impl VersionMessage {
     }
 
     pub fn verify_message(&self) -> Result<(), String> {
+        info!("verify_message: {:?}", self);
         // Version check: Example - only accept versions >= 70001 and <= 70015
         if self.version < 70001 || self.version > 70015 {
-            return Err("Unsupported version".to_string());
+            return Err(format!(
+                "Unsupported version. current version: {}",
+                self.version,
+            ));
         }
 
         // Services check: Ensure NODE_NETWORK is supported
         if self.services & 0x01 == 0 {
-            return Err("Node must support NODE_NETWORK".to_string());
+            return Err(format!(
+                "Node must support NODE_NETWORK. current services: {}",
+                self.services
+            ));
         }
 
         // Timestamp check: Example - allow a 90-minute skew from current time
         let current_timestamp = chrono::Utc::now().timestamp();
         if self.timestamp < current_timestamp - 5400 || self.timestamp > current_timestamp + 5400 {
-            return Err("Timestamp is out of range".to_string());
+            return Err(format!(
+                "Timestamp is out of range. current timestamp: {}",
+                self.timestamp
+            ));
         }
 
         // Address checks: For simplicity, ensuring they're not unspecified or loopback
@@ -83,7 +95,11 @@ impl VersionMessage {
 
         // User Agent check: Example - limit length to 256 characters
         if self.user_agent.len() > 256 {
-            return Err("User agent too long".to_string());
+            return Err(format!(
+                "User agent too long. current user_agent length: {}, user_agent: {}",
+                self.user_agent.len(),
+                self.user_agent,
+            ));
         }
 
         // Start Height check
@@ -176,7 +192,6 @@ impl Decoder for VersionCodec {
         }
 
         let user_agent_bytes = buf.copy_to_bytes(user_agent_size.value_as_usize());
-        buf.advance(user_agent_size.value_as_usize());
         let user_agent = String::from_utf8(user_agent_bytes.to_vec())
             .map_err(|_| io::Error::new(ErrorKind::InvalidData, "Invalid UTF-8 for user_agent"))?;
 
@@ -199,5 +214,24 @@ impl Decoder for VersionCodec {
             start_height,
             relay,
         }))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tracing_test::traced_test;
+
+    #[traced_test]
+    #[test]
+    fn encode_decode_version() -> Result<(), Box<dyn std::error::Error>> {
+        let expected_message = VersionMessage::new("user_agent", 70);
+        let mut codec = VersionCodec {};
+        let mut bytes = BytesMut::new();
+        codec.encode(expected_message.clone(), &mut bytes).unwrap();
+
+        let decoded_message = codec.decode(&mut bytes).unwrap().unwrap();
+        assert_eq!(expected_message, decoded_message);
+        Ok(())
     }
 }
