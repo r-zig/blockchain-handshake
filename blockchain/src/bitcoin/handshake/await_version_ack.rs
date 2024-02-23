@@ -49,8 +49,8 @@ impl AwaitVerAck {
                     }
                     Err(e) => {
                         error!(
-                            "failed to receive verack message from {:?}",
-                            self.connection_info
+                            "failed to receive verack message from {:?}, reason: {:?}",
+                            self.connection_info, e
                         );
                         return Err(BitcoinHandshakeError::ProtocolError(e.to_string()));
                     }

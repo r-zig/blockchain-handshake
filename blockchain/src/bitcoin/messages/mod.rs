@@ -95,7 +95,7 @@ pub mod types {
         net::{IpAddr, Ipv4Addr, Ipv6Addr},
     };
 
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, PartialEq)]
     pub(crate) struct BitcoinIpAddr([u8; 16]);
 
     impl BitcoinIpAddr {

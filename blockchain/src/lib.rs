@@ -11,13 +11,13 @@ mod tests {
     #[traced_test]
     #[tokio::test]
     async fn bitcoin_handshake_single_peer() -> Result<(), Box<dyn std::error::Error>> {
-        info!("This is being logged on the info level");
-        let _ = tracing_subscriber::fmt::try_init();
-
         // set environment variables to point to the well known peer address
-        let remote_peer_address = "127.0.0.1:8333";
+        // try get address from https://bitnodes.io/nodes/?q=Satoshi:26.0.0
+        let remote_peer_address = "49.13.129.99:8333";
+        let user_agent = "my test user agent";
         // Set up the environment variable
         std::env::set_var("REMOTE_PEER_ADDRESS", remote_peer_address);
+        std::env::set_var("USER_AGENT", user_agent);
 
         // create bitcoin peer using the factory
         let mut local_peer = BitcoinPeerFactory::new_peer();
@@ -28,7 +28,6 @@ mod tests {
         // // verify that the connection established correctly
         // todo!("how to verify?")
         // // assert_eq!(result, 4);
-        warn!("This is being logged on the warn level");
         Ok(())
     }
 }
