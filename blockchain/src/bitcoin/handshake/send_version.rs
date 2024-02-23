@@ -1,15 +1,15 @@
 use super::{
-    connecting::Connecting, connection_protocol::BitcoinHandshakeError,
+    connecting::Connecting, connection_protocol::BitcoinHandshakeError, BitcoinOwnConfiguration,
     CHANNEL_NOT_INITIALIZED_ERROR,
 };
-use bytes::BytesMut;
-use tokio::{io::AsyncWriteExt, net::TcpStream};
-use tokio_util::codec::Encoder;
-
 use crate::bitcoin::{
     bitcoin_connection_info::BitcoinConnectionInfo,
     messages::{commands::Command, HeaderCodec, HeaderMessage, VersionCodec, VersionMessage},
 };
+use bytes::BytesMut;
+use clap::Parser;
+use tokio::{io::AsyncWriteExt, net::TcpStream};
+use tokio_util::codec::Encoder;
 
 #[derive(Debug)]
 pub(super) struct SendVersion {
@@ -64,10 +64,11 @@ impl SendVersion {
 
 impl From<Connecting> for SendVersion {
     fn from(value: Connecting) -> Self {
+        let bitcoin_own_configuration = BitcoinOwnConfiguration::parse();
         SendVersion::new(
             value.channel.expect(CHANNEL_NOT_INITIALIZED_ERROR),
             value.connection_info,
-            "My agent - todo take from configuration".to_owned(),
+            bitcoin_own_configuration.user_agent,
         )
     }
 }
