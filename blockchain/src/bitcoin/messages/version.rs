@@ -13,7 +13,7 @@ use super::types::{BitcoinIpAddr, CompactSize};
 /// Represents a Bitcoin version message.
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct VersionMessage {
-    version: i32,
+    version: u32,
     services: u64,
     timestamp: i64,
     addr_recv_services: u64,
@@ -119,7 +119,7 @@ impl Encoder<VersionMessage> for VersionCodec {
     type Error = std::io::Error;
 
     fn encode(&mut self, msg: VersionMessage, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        dst.put_i32_le(msg.version);
+        dst.put_u32_le(msg.version);
         dst.put_u64_le(msg.services);
         dst.put_i64_le(msg.timestamp);
 
@@ -159,7 +159,7 @@ impl Decoder for VersionCodec {
         }
 
         let mut buf = src.as_ref();
-        let version = buf.get_i32_le();
+        let version = buf.get_u32_le();
         let services = buf.get_u64_le();
         let timestamp = buf.get_i64_le();
 
