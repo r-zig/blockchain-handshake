@@ -49,7 +49,6 @@ mod tests {
     #[test]
     fn test_discover_single_peer() {
         let expected_remote_peer_address = "127.0.0.1:8333";
-        let expected_remote_user_agent = "test_user_agent";
         // Set up the environment variable
         std::env::set_var("REMOTE_PEER_ADDRESS", expected_remote_peer_address);
 
