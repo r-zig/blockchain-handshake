@@ -10,7 +10,7 @@ pub struct BitcoinConnectionInfo {
     // The public address that the peer listen on to incoming connections
     pub public_address: SocketAddr,
 
-    pub version: Option<VersionMessage>,
+    pub(crate) version: Option<VersionMessage>,
 }
 
 impl ConnectionInfo for BitcoinConnectionInfo {}
