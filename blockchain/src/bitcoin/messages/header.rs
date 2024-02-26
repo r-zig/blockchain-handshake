@@ -34,7 +34,7 @@ impl HeaderMessage {
 
     pub fn new_without_payload(command: Command, checksum: [u8; 4]) -> Self {
         match command {
-            Command::VersionAck => {}
+            Command::VerAck => {}
             _ => error!(
                 "command {} must initialize with payload, use the other new() fn",
                 command
@@ -62,8 +62,9 @@ impl HeaderMessage {
     }
 
     fn get_magic() -> u32 {
-        todo!("read from configuration, decide if mainnet or testnet");
-        TESTNET_MAGIC
+        MAINNET_MAGIC
+        // todo!("read from configuration, decide if mainnet or testnet");
+        // TESTNET_MAGIC
     }
 }
 

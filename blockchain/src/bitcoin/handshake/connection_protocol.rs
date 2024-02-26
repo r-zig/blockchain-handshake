@@ -172,7 +172,7 @@ impl BitcoinConnectionProtocol {
                 Ok(())
             }
             Err(e) => Err(BitcoinHandshakeError::InvalidResponse(format!(
-                "Failed to receive version ack from {}, reason: {}",
+                "Failed to receive verack from {}, reason: {}",
                 self.connection_info.public_address.to_string(),
                 e
             ))),

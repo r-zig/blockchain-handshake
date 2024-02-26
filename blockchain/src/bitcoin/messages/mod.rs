@@ -16,7 +16,7 @@ pub mod commands {
     #[strum(serialize_all = "lowercase")]
     pub(crate) enum Command {
         Version,
-        VersionAck,
+        VerAck,
     }
 
     impl Command {
@@ -59,16 +59,13 @@ pub mod commands {
         #[test]
         fn test_enum_to_string() {
             assert_eq!(Command::Version.to_string(), "version");
-            assert_eq!(Command::VersionAck.to_string(), "versionack");
+            assert_eq!(Command::VerAck.to_string(), "verack");
         }
 
         #[test]
         fn test_string_to_enum() {
             assert_eq!("version".parse::<Command>().unwrap(), Command::Version);
-            assert_eq!(
-                "versionack".parse::<Command>().unwrap(),
-                Command::VersionAck
-            );
+            assert_eq!("verack".parse::<Command>().unwrap(), Command::VerAck);
         }
 
         #[test]

@@ -27,8 +27,7 @@ impl SendVerAck {
         // prepare the header
         let mut header_buffer = BytesMut::new();
         let mut header_codec = HeaderCodec {};
-        let header_message =
-            HeaderMessage::new_without_payload(Command::VersionAck, VERACK_CHECKSUM);
+        let header_message = HeaderMessage::new_without_payload(Command::VerAck, VERACK_CHECKSUM);
         header_codec
             .encode(header_message, &mut header_buffer)
             .map_err(|e| BitcoinHandshakeError::ProtocolError(e.to_string()))?;

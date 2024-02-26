@@ -42,7 +42,7 @@ impl AwaitVerAck {
                             "Receive verack successfully from {:?}",
                             self.connection_info
                         );
-                        if header_message.command != Command::VersionAck {
+                        if header_message.command != Command::VerAck {
                             return Err(BitcoinHandshakeError::ProtocolError(format!("Invalid header. header must be of verack command. the current header: {:?}",header_message)));
                         }
                         return Ok(());
@@ -56,9 +56,9 @@ impl AwaitVerAck {
                     }
                 },
                 None => {
-                    error!("failed to receive version from {:?}", self.connection_info);
+                    error!("failed to receive verack from {:?}", self.connection_info);
                     return Err(BitcoinHandshakeError::ProtocolError(
-                        "Cannot receive version".to_owned(),
+                        "Cannot receive verack".to_owned(),
                     ));
                 }
             }
