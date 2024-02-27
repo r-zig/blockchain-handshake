@@ -1,8 +1,6 @@
 use bytes::{Buf, BufMut, BytesMut};
-use tracing::info;
 
 use std::{
-    fmt::format,
     io::{self, ErrorKind},
     net::Ipv6Addr,
 };
@@ -49,67 +47,6 @@ impl VersionMessage {
             start_height,
             relay: false,
         }
-    }
-
-    pub fn verify_message(&self) -> Result<(), String> {
-        info!("verify_message: {:?}", self);
-        // Version check: Example - only accept versions >= 70001 and <= 70015
-        if self.version < 70001 || self.version > 70015 {
-            return Err(format!(
-                "Unsupported version. current version: {}",
-                self.version,
-            ));
-        }
-
-        // Services check: Ensure NODE_NETWORK is supported
-        if self.services & 0x01 == 0 {
-            return Err(format!(
-                "Node must support NODE_NETWORK. current services: {}",
-                self.services
-            ));
-        }
-
-        // Timestamp check: Example - allow a 90-minute skew from current time
-        let current_timestamp = chrono::Utc::now().timestamp();
-        if self.timestamp < current_timestamp - 5400 || self.timestamp > current_timestamp + 5400 {
-            return Err(format!(
-                "Timestamp is out of range. current timestamp: {}",
-                self.timestamp
-            ));
-        }
-
-        // Address checks: For simplicity, ensuring they're not unspecified or loopback
-        // Skipping detailed IP range validation for brevity
-        self.addr_recv_ip
-            .is_valid()
-            .map_err(|e| e + " for addr_recv_ip")?;
-
-        self.addr_trans_ip
-            .is_valid()
-            .map_err(|e| e + " for addr_trans_ip")?;
-
-        // Port checks
-        if self.addr_recv_port == 0 || self.addr_trans_port == 0 {
-            return Err("Ports must be non-zero".to_string());
-        }
-
-        // User Agent check: Example - limit length to 256 characters
-        if self.user_agent.len() > 256 {
-            return Err(format!(
-                "User agent too long. current user_agent length: {}, user_agent: {}",
-                self.user_agent.len(),
-                self.user_agent,
-            ));
-        }
-
-        // Start Height check
-        if self.start_height < 0 {
-            return Err("Start height must be non-negative".to_string());
-        }
-
-        // No need to explicitly check nonce and relay as their types ensure validity
-
-        Ok(())
     }
 }
 

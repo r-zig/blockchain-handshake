@@ -118,19 +118,6 @@ pub mod types {
                 Err("Invalid byte length for BitcoinIpAddr")
             }
         }
-
-        pub(crate) fn is_valid(&self) -> Result<(), String> {
-            let bytes = self.0;
-            let ip_addr = IpAddr::from(bytes);
-            if ip_addr.is_unspecified() {
-                return Err("Invalid IP address, its unspecified address".to_owned());
-            }
-
-            if ip_addr.is_loopback() {
-                return Err("Invalid IP address, its loopback address".to_owned());
-            }
-            Ok(())
-        }
     }
     impl From<Ipv4Addr> for BitcoinIpAddr {
         fn from(addr: Ipv4Addr) -> Self {

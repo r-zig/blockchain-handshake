@@ -2,7 +2,6 @@ use blockchain::bitcoin::bitcoin_factory::BitcoinPeerFactory;
 use blockchain::protocols::peer::Peer;
 use clap::Parser;
 use std::net::SocketAddr;
-use tracing::info;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]

@@ -5,7 +5,6 @@ pub mod protocols;
 #[cfg(test)]
 mod tests {
     use crate::{bitcoin::bitcoin_factory::BitcoinPeerFactory, protocols::peer::Peer};
-    use tracing::{info, warn};
     use tracing_test::traced_test;
 
     #[traced_test]
