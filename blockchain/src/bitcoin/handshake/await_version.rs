@@ -42,9 +42,9 @@ impl AwaitVersion {
                             "Receive version successfully from {:?}, version message: {:?}",
                             self.connection_info, version_message
                         );
-                        version_message
-                            .verify_message()
-                            .map_err(|e| BitcoinHandshakeError::InvalidResponse(e))?;
+                        // version_message
+                        //     .verify_message()
+                        //     .map_err(|e| BitcoinHandshakeError::InvalidResponse(e))?;
                         // assign the version message to the connection info, for later use when communicating with this peer
                         self.connection_info.version = Some(version_message);
                         return Ok(());

@@ -10,6 +10,7 @@ use bytes::BytesMut;
 use clap::Parser;
 use tokio::{io::AsyncWriteExt, net::TcpStream};
 use tokio_util::codec::Encoder;
+use tracing::error;
 
 #[derive(Debug)]
 pub(super) struct SendVersion {
@@ -64,7 +65,14 @@ impl SendVersion {
 
 impl From<Connecting> for SendVersion {
     fn from(value: Connecting) -> Self {
-        let bitcoin_own_configuration = BitcoinOwnConfiguration::parse();
+        let bitcoin_own_configuration = BitcoinOwnConfiguration::try_parse()
+            .map_err(|e| {
+                error!(
+                    "Failure while parsing command line arguments. error: {:?}",
+                    e
+                )
+            })
+            .expect("Failure while parsing command line arguments.");
         SendVersion::new(
             value.channel.expect(CHANNEL_NOT_INITIALIZED_ERROR),
             value.connection_info,
