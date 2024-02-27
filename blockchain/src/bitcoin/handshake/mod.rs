@@ -14,6 +14,6 @@ const CHANNEL_NOT_INITIALIZED_ERROR: &str = "channel TcpStream must be initializ
 #[derive(Debug, Parser)]
 #[clap(long_about = "Bitcoin own configuration")]
 pub struct BitcoinOwnConfiguration {
-    #[clap(long, env = "USER_AGENT")]
+    #[clap(long, env = "USER_AGENT", default_value = "RZ Bitcoin client")]
     pub user_agent: String,
 }
