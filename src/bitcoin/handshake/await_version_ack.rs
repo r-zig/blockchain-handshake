@@ -13,6 +13,7 @@ use crate::bitcoin::{
     messages::{commands::Command, HeaderCodec},
 };
 
+const MAX_READ_HEADER_ATTEMPTS: i8 = 3;
 #[derive(Debug)]
 pub(super) struct AwaitVerAck {
     pub(super) channel: Option<TcpStream>,
@@ -31,7 +32,7 @@ impl AwaitVerAck {
     pub(super) async fn execute(&mut self) -> AdvanceStateResult {
         if let Some(channel) = self.channel.take() {
             let mut framed = Framed::new(channel, HeaderCodec);
-            loop {
+            for _ in 1..=MAX_READ_HEADER_ATTEMPTS {
                 let result = framed.next().await;
                 match result {
                     Some(Ok(header_message)) => {
@@ -64,6 +65,7 @@ impl AwaitVerAck {
                     }
                 }
             }
+            return Err(BitcoinHandshakeError::ProtocolError(format!("Failed to read the verack header and stop after pass the max retries of: {} times", MAX_READ_HEADER_ATTEMPTS)));
         } else {
             panic!("{}", CHANNEL_NOT_INITIALIZED_ERROR);
         }
