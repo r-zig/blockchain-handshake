@@ -1,7 +1,7 @@
 use futures::StreamExt;
 use tokio::net::TcpStream;
 use tokio_util::codec::Framed;
-use tracing::{debug, error};
+use tracing::{debug, error, warn};
 
 use super::{
     connection_protocol::AdvanceStateResult, send_version_ack::SendVerAck,
@@ -31,13 +31,12 @@ impl AwaitVerAck {
     pub(super) async fn execute(&mut self) -> AdvanceStateResult {
         if let Some(channel) = self.channel.take() {
             let mut framed = Framed::new(channel, HeaderCodec);
-            let result = framed.next().await;
-
-            // return the channel back
-            self.channel = Some(framed.into_inner());
-            match result {
-                Some(r) => match r {
-                    Ok(header_message) => {
+            loop {
+                let result = framed.next().await;
+                match result {
+                    Some(Ok(header_message)) => {
+                        // return the channel back
+                        self.channel = Some(framed.into_inner());
                         debug!(
                             "Receive verack successfully from {:?}",
                             self.connection_info
@@ -47,19 +46,22 @@ impl AwaitVerAck {
                         }
                         return Ok(());
                     }
-                    Err(e) => {
+                    Some(Err(e)) => {
+                        // return the channel back
+                        self.channel = Some(framed.into_inner());
                         error!(
                             "failed to receive verack message from {:?}, reason: {:?}",
                             self.connection_info, e
                         );
                         return Err(BitcoinHandshakeError::ProtocolError(e.to_string()));
                     }
-                },
-                None => {
-                    error!("failed to receive verack from {:?}", self.connection_info);
-                    return Err(BitcoinHandshakeError::ProtocolError(
-                        "Cannot receive verack".to_owned(),
-                    ));
+                    None => {
+                        warn!(
+                            "did not receive verack from {:?}, continue reading",
+                            self.connection_info
+                        );
+                        continue;
+                    }
                 }
             }
         } else {
