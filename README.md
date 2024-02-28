@@ -39,3 +39,12 @@ While most peers connect successfully, some may fail due to the "sendcmpct" comm
 ## Limitations
 The current implementation does not discover multiple Bitcoin nodes; it only attempts to connect to a single node.
 Checksum validation is not yet implemented.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgment
+
+If you use this code or a modified version of it in your project, please credit me as a contributor by mentioning my GitHub username or linking back to the original repository. This acknowledgment is not a condition of the license but a request to foster collaboration and recognition among developers.
+
