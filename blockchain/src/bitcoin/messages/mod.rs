@@ -124,7 +124,7 @@ pub mod types {
     pub(crate) struct BitcoinIpAddr([u8; 16]);
 
     impl BitcoinIpAddr {
-        pub fn to_bytes(&self) -> [u8; 16] {
+        pub fn encode(&self) -> [u8; 16] {
             self.0
         }
 
@@ -194,6 +194,7 @@ pub mod types {
         /// # Examples
         ///
         /// ```
+        /// use super::types::CompactSize;
         /// let my_string = "Hello, world!";
         /// let compact_size_from_str = CompactSize::from_length(my_string);
         ///
@@ -312,7 +313,7 @@ pub mod types {
         type Error = &'static str;
 
         fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
-            match bytes.get(0) {
+            match bytes.first() {
                 Some(&first_byte) if first_byte < 253 => Ok(CompactSize(first_byte as u64)),
                 Some(&253) => {
                     let value_bytes = bytes.get(1..3).ok_or("Not enough bytes for u16")?;
