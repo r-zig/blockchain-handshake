@@ -194,7 +194,7 @@ pub mod types {
         /// # Examples
         ///
         /// ```
-        /// use super::types::CompactSize;
+        /// use blockchain::bitcoin::messages::types::CompactSize;
         /// let my_string = "Hello, world!";
         /// let compact_size_from_str = CompactSize::from_length(my_string);
         ///
