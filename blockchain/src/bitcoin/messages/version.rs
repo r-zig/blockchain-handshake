@@ -62,12 +62,12 @@ impl Encoder<VersionMessage> for VersionCodec {
 
         dst.put_u64_le(msg.addr_recv_services);
         // Assuming addr_recv_ip is serialized to 16 bytes
-        dst.extend_from_slice(&msg.addr_recv_ip.to_bytes());
+        dst.extend_from_slice(&msg.addr_recv_ip.encode());
         dst.put_u16_le(msg.addr_recv_port);
 
         dst.put_u64_le(msg.addr_trans_services);
         // Assuming addr_trans_ip is serialized to 16 bytes
-        dst.extend_from_slice(&msg.addr_trans_ip.to_bytes());
+        dst.extend_from_slice(&msg.addr_trans_ip.encode());
         dst.put_u16_le(msg.addr_trans_port);
 
         dst.put_u64_le(msg.nonce);
