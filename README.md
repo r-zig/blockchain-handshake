@@ -32,7 +32,10 @@ You can attempt to connect to other public Bitcoin nodes using the following res
 https://bitnodes.io/nodes
 While most peers connect successfully, some may fail due to the "sendcmpct" command being sent instead of "verack". Further investigation into the Bitcoin protocol is necessary to determine if this behavior is valid.
 
-## Limitations
-The current implementation does not discover multiple Bitcoin nodes; it only attempts to connect to a single node via command line or an environment variable named DISCOVER_REMOTE_PEER_ADDRESS.
+## Using the command line args or environment variables:
+-A or --remote-address, or the DISCOVER_REMOTE_PEER_ADDRESS environment variable, is used to set the address of the remote node.
+-U or --user-agent, or the USER_AGENT environment variable, is used to set the user agent string exchanged between nodes.
 
-Another environment variable, USER_AGENT, is used to set the user agent string exchanged between peers. You can also specify the remote peer address and user agent from the CLI using the -A and -U arguments, respectively.
+## Limitations
+The current implementation does not discover multiple Bitcoin nodes; it only attempts to connect to a single node.
+Checksum validation is not yet implemented.
