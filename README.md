@@ -1,6 +1,5 @@
 # blockchain-handshake
-Getting Started
-Prerequisites
+# Prerequisites
 Before running this example, you must obtain a modified version of another Bitcoin implementation. For this example, we use the Rust Bitcoin library.
 
 ## Fork and Modify the Rust Bitcoin Library
@@ -16,7 +15,7 @@ Then, to run the modified library, execute the following command:
 ```bash Copy code
 cargo run --example handshake --features="std rand-std" -S 127.0.0.1:8333
 ```
-## Clone and Run the Custom Rust Implementation
+# Getting Started
 Obtain the custom Rust implementation by cloning the following repository:
 
 ```bash Copy code
