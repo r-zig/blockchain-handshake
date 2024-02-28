@@ -3,7 +3,7 @@ use std::io::{self, Error, ErrorKind};
 use bytes::{Buf, BufMut, BytesMut};
 use sha2::{Digest, Sha256};
 use tokio_util::codec::{Decoder, Encoder};
-use tracing::error;
+use tracing::{error, warn};
 
 use super::commands::Command;
 
@@ -77,6 +77,11 @@ impl Decoder for HeaderCodec {
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         if src.len() < HEADER_LENGTH {
             // Size of the header
+            warn!(
+                "cannot decode header, the buffer size of: {} is less then the minimum of: {}",
+                src.len(),
+                HEADER_LENGTH
+            );
             return Ok(None);
         }
 
@@ -92,8 +97,12 @@ impl Decoder for HeaderCodec {
         }
         Ok(Some(HeaderMessage {
             magic,
-            command: Command::decode(command)
-                .map_err(|_| Error::new(ErrorKind::InvalidData, "Invalid command"))?,
+            command: Command::decode(command).map_err(|_| {
+                Error::new(
+                    ErrorKind::InvalidData,
+                    format!("Invalid command: {:?}", command),
+                )
+            })?,
             payload_length,
             checksum,
         }))
