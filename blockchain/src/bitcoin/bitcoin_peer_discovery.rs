@@ -1,20 +1,17 @@
-use clap::Parser;
 use futures::{stream, Stream};
-use std::{net::SocketAddr, pin::Pin};
+use std::pin::Pin;
 
 use crate::protocols::peer_discovery::PeerDiscovery;
 
-use super::bitcoin_connection_info::BitcoinConnectionInfo;
+use super::{bitcoin_connection_info::BitcoinConnectionInfo, BitcoinConfiguration};
 
 pub struct BitcoinPeerDiscovery {
-    bitcoin_peer_configuration: BitcoinPeerConfiguration,
+    config: BitcoinConfiguration,
 }
 
 impl BitcoinPeerDiscovery {
-    pub fn new() -> Self {
-        BitcoinPeerDiscovery {
-            bitcoin_peer_configuration: BitcoinPeerConfiguration::parse(),
-        }
+    pub fn new(config: BitcoinConfiguration) -> Self {
+        BitcoinPeerDiscovery { config }
     }
 }
 
@@ -22,7 +19,7 @@ impl PeerDiscovery for BitcoinPeerDiscovery {
     type Info = BitcoinConnectionInfo;
     async fn discover_peers(&self) -> Pin<Box<dyn Stream<Item = Self::Info> + Send + Sync>> {
         let connection_info = BitcoinConnectionInfo {
-            public_address: self.bitcoin_peer_configuration.remote_peer_address,
+            public_address: self.config.discover_remote_peer_address,
             version: None,
         };
         let stream = stream::once(async move { connection_info });
@@ -32,28 +29,23 @@ impl PeerDiscovery for BitcoinPeerDiscovery {
     }
 }
 
-#[derive(Debug, Parser)]
-#[clap(long_about = "Bitcoin connection configuration")]
-pub struct BitcoinPeerConfiguration {
-    #[clap(long, env = "REMOTE_PEER_ADDRESS")]
-    pub remote_peer_address: SocketAddr,
-}
-
 #[cfg(test)]
 mod tests {
+    use clap::Parser;
     use futures::StreamExt;
+    use std::net::SocketAddr;
+    use std::str::FromStr;
 
     use super::*;
-    use std::str::FromStr;
 
     #[test]
     fn test_discover_single_peer() {
         let expected_remote_peer_address = "127.0.0.1:8333";
         // Set up the environment variable
-        std::env::set_var("REMOTE_PEER_ADDRESS", expected_remote_peer_address);
+        std::env::set_var("DISCOVER_REMOTE_PEER_ADDRESS", expected_remote_peer_address);
 
         // Create a BitcoinPeerDiscovery instance
-        let discovery = BitcoinPeerDiscovery::new();
+        let discovery = BitcoinPeerDiscovery::new(BitcoinConfiguration::parse());
 
         // Run the async test
         let runtime = tokio::runtime::Runtime::new().unwrap();

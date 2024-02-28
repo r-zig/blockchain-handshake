@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/target/debug/examples/bitcoin_client_handshake",
             // "program": "~/Documents/blockchain-handshake/blockchain/target/debug/examples/bitcoin_client_handshake",
             "args": [
-                "--remote-peer-address",
+                "--remote-address",
                 "127.0.0.1:8333",
             ],
             "cwd": "${workspaceFolder}"

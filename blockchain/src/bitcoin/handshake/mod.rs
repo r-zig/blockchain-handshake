@@ -6,14 +6,6 @@ mod disconnected;
 mod established;
 mod send_version;
 mod send_version_ack;
-use clap::Parser;
 pub use connection_protocol::BitcoinConnectionProtocol;
 
 const CHANNEL_NOT_INITIALIZED_ERROR: &str = "channel TcpStream must be initialized";
-
-#[derive(Debug, Parser)]
-#[clap(long_about = "Bitcoin own configuration")]
-pub struct BitcoinOwnConfiguration {
-    #[clap(long, env = "USER_AGENT", default_value = "RZ Bitcoin client")]
-    pub user_agent: String,
-}

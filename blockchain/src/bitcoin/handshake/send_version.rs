@@ -1,12 +1,14 @@
 use super::{
-    connecting::Connecting, connection_protocol::BitcoinHandshakeError, BitcoinOwnConfiguration,
+    connecting::Connecting, connection_protocol::BitcoinHandshakeError,
     CHANNEL_NOT_INITIALIZED_ERROR,
 };
 use crate::bitcoin::{
     bitcoin_connection_info::BitcoinConnectionInfo,
     messages::{commands::Command, HeaderCodec, HeaderMessage, VersionCodec, VersionMessage},
+    BitcoinConfiguration,
 };
 use bytes::BytesMut;
+
 use clap::Parser;
 use tokio::{io::AsyncWriteExt, net::TcpStream};
 use tokio_util::codec::Encoder;
@@ -65,7 +67,7 @@ impl SendVersion {
 
 impl From<Connecting> for SendVersion {
     fn from(value: Connecting) -> Self {
-        let bitcoin_own_configuration = BitcoinOwnConfiguration::try_parse()
+        let config = BitcoinConfiguration::try_parse()
             .map_err(|e| {
                 error!(
                     "Failure while parsing command line arguments. error: {:?}",
@@ -76,7 +78,7 @@ impl From<Connecting> for SendVersion {
         SendVersion::new(
             value.channel.expect(CHANNEL_NOT_INITIALIZED_ERROR),
             value.connection_info,
-            bitcoin_own_configuration.user_agent,
+            config.user_agent,
         )
     }
 }
