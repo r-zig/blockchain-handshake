@@ -2,6 +2,8 @@
 pub mod bitcoin;
 pub mod protocols;
 
+pub const HEADER_LENGTH: usize = 24;
+
 #[cfg(test)]
 mod tests {
     use crate::{

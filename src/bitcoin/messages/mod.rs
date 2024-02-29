@@ -1,3 +1,6 @@
+use bitcoin_hashes::sha256d;
+use bitcoin_hashes::Hash;
+
 mod header;
 mod verack;
 mod version;
@@ -6,6 +9,11 @@ pub(crate) use header::{HeaderCodec, HeaderMessage};
 // pub(crate) use verack::VerackMessage;
 pub(crate) use version::VersionCodec;
 pub(crate) use version::VersionMessage;
+
+pub fn sha2_checksum(data: &[u8]) -> [u8; 4] {
+    let checksum = sha256d::Hash::hash(data);
+    [checksum[0], checksum[1], checksum[2], checksum[3]]
+}
 
 pub mod commands {
     use strum::Display;

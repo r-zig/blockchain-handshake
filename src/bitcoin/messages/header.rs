@@ -1,28 +1,27 @@
-use std::io::{self, Error, ErrorKind};
-
 use bytes::{Buf, BufMut, BytesMut};
-use sha2::{Digest, Sha256};
+use std::io::{self, Error, ErrorKind};
 use tokio_util::codec::{Decoder, Encoder};
 use tracing::{error, warn};
 
-use super::commands::Command;
+use crate::HEADER_LENGTH;
+
+use super::{commands::Command, sha2_checksum};
 
 const MAINNET_MAGIC: u32 = 0xD9B4BEF9;
 const TESTNET_MAGIC: u32 = 0x0709110B;
-const HEADER_LENGTH: usize = 24;
 
 // message header for all messages type
 #[derive(Debug)]
 pub(crate) struct HeaderMessage {
     magic: u32,
     pub command: Command, // should convert into [u8; 12],
-    payload_length: u32,
-    checksum: [u8; 4],
+    pub payload_length: u32,
+    pub checksum: [u8; 4],
 }
 
 impl HeaderMessage {
     pub fn new(command: Command, payload_buffer: &BytesMut) -> Self {
-        let checksum = Self::compute_checksum(payload_buffer);
+        let checksum = sha2_checksum(payload_buffer);
         let payload_length = payload_buffer.len() as u32;
         HeaderMessage {
             command,
@@ -46,19 +45,6 @@ impl HeaderMessage {
             magic: Self::get_magic(),
             checksum,
         }
-    }
-
-    fn compute_checksum(payload: &[u8]) -> [u8; 4] {
-        // First SHA-256 hash
-        let hash1 = Sha256::digest(payload);
-        // Second SHA-256 hash
-        let hash2 = Sha256::digest(&hash1);
-
-        // Extract the first 4 bytes as the checksum
-        let checksum = &hash2[0..4];
-        let mut result = [0u8; 4];
-        result.copy_from_slice(checksum);
-        result
     }
 
     fn get_magic() -> u32 {
