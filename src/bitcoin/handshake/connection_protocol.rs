@@ -67,7 +67,7 @@ impl BitcoinConnectionProtocol {
         }
     }
 
-    #[tracing::instrument]
+    #[tracing::instrument(level = "debug")]
     pub(crate) async fn advance(&mut self) -> Result<Option<TcpStream>, BitcoinHandshakeError> {
         let state = std::mem::replace(
             &mut self.state,
