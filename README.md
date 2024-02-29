@@ -38,7 +38,7 @@ While most peers connect successfully, some may fail due to the "sendcmpct" comm
 
 ## Limitations
 The current implementation does not discover multiple Bitcoin nodes; it only attempts to connect to a single node.
-Checksum validation is not yet implemented.
+Checksum validation is implemented only on version message.
 
 ## License
 
