@@ -1,5 +1,6 @@
 # blockchain-handshake
-Efficient Blockchain Node Protocol: Mutex-Free Asynchronous State Machine for Streamlined Handshakes and Conditional Concurrency.
+## Efficient Blockchain Node Protocol: Mutex-Free Asynchronous State Machine for Streamlined Handshakes and Conditional Concurrency.
+Optimized for Efficiency: This implementation sidesteps context switching by forgoing mutexes or other locking mechanisms wherever the protocol allows. Specifically, during the communication phase, a given socket doesn't handle multiple asynchronous tasks simultaneously, enabling the state machine to transfer socket control seamlessly from one state to the next without resorting to Arc<Mutex<...>>. Should the connection stabilize and the protocol's state permit concurrent tasks over a single socket, concurrency control is then elegantly introduced through Arc<Mutex<...>>, but only as necessary.
 
 # Prerequisites
 Before running this example, you must obtain a modified version of another Bitcoin implementation. For this example, we use the Rust Bitcoin library.
