@@ -1,4 +1,6 @@
 # blockchain-handshake
+Efficient Blockchain Node Protocol: Mutex-Free Asynchronous State Machine for Streamlined Handshakes and Conditional Concurrency.
+
 # Prerequisites
 Before running this example, you must obtain a modified version of another Bitcoin implementation. For this example, we use the Rust Bitcoin library.
 
